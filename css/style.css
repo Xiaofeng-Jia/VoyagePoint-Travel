@@ -9,8 +9,8 @@
 .site-header h1{margin:0;font-size:40px;letter-spacing:1px}
 .site-header .tag{margin:8px 0 0;color:var(--muted);font-size:18px}
 .container{max-width:1100px;margin:32px auto;padding:0 20px}
-.banner{width:100%;overflow:hidden}
-.banner img{width:100%;height:300px;object-fit:cover;display:block}
+.banner{width:100%;/* allow full image to show (no cropping) */overflow:visible}
+.banner img{width:100%;height:auto;object-fit:contain;display:block}
 .hero{display:flex;gap:24px;align-items:center}
 .hero-left{flex:1}
 .hero-right{width:320px}
