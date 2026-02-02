@@ -1,8 +1,9 @@
-const modal = document.getElementById('chatModal');
+const modal = document.getElementById('chatWidget');
 const startBtn = document.getElementById('startChat');
 const chatMessage = document.getElementById('chatMessage');
 const chatOptions = document.getElementById('chatOptions');
 const closeBtn = document.getElementById('closeChat');
+const minimizeBtn = document.getElementById('minimizeChat');
 
 const nostalgiaSteps = [
   {
@@ -65,21 +66,46 @@ function getSteps() {
 }
 
 let stepIndex = 0;
+// history holds rendered messages so reopening the dialog shows past conversation
+let history = [];
+let lastPushedStep = -1; // track which system steps we've already pushed into history
 
 function openModal() {
-  stepIndex = 0;
+  // do not reset stepIndex or history so previous dialog is visible
+  // if no history yet, render the current step which will push its system message
   renderStep();
   modal.classList.remove('hidden');
+  // ensure it's expanded when opened
+  modal.classList.remove('minimized');
 }
 
 function closeModal() {
   modal.classList.add('hidden');
 }
 
+function renderHistory() {
+  chatMessage.innerHTML = '';
+  history.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'msg ' + (item.type === 'user' ? 'user' : 'system');
+    el.textContent = item.text;
+    chatMessage.appendChild(el);
+  });
+  // scroll to bottom
+  chatMessage.scrollTop = chatMessage.scrollHeight;
+}
+
 function renderStep() {
   const steps = getSteps();
   const step = steps[stepIndex];
-  chatMessage.textContent = step.message;
+
+  // push system message for this step into history if not yet pushed
+  if (lastPushedStep < stepIndex) {
+    history.push({ type: 'system', text: step.message });
+    lastPushedStep = stepIndex;
+  }
+
+  renderHistory();
   chatOptions.innerHTML = '';
 
   if (step.options && step.options.length) {
@@ -92,11 +118,10 @@ function renderStep() {
       chatOptions.appendChild(btn);
     });
   } else {
-    // final message — show a simple acknowledgment
+    // final message — show a simple acknowledgment in options area
     const done = document.createElement('div');
     done.textContent = '— End of dialog — Thank you!';
-    done.style.marginTop = '8px';
-    done.style.color = '#666';
+    done.className = 'end';
     chatOptions.appendChild(done);
   }
 }
@@ -118,12 +143,20 @@ function handleOption(selectedIndex, btnEl) {
   }
 
   if (selectedIndex === correct) {
+    // record user selection in history
+    const step = steps[stepIndex];
+    history.push({ type: 'user', text: step.options[selectedIndex] });
+
     // correct — advance
     if (stepIndex < steps.length - 1) {
       stepIndex += 1;
       renderStep();
     } else {
-      closeModal();
+      // push final system message into history (if not already pushed) then close
+      // renderStep will handle pushing the final system message if appropriate
+      renderStep();
+      // optionally keep the modal open so user can see final message; close after short delay
+      setTimeout(() => closeModal(), 1000);
     }
   } else {
     // incorrect — no action (click has no effect)
@@ -133,8 +166,6 @@ function handleOption(selectedIndex, btnEl) {
 
 startBtn && startBtn.addEventListener('click', openModal);
 closeBtn && closeBtn.addEventListener('click', closeModal);
-
-// allow closing by clicking outside
-modal && modal.addEventListener('click', (e) => {
-  if (e.target === modal) closeModal();
+minimizeBtn && minimizeBtn.addEventListener('click', () => {
+  modal.classList.toggle('minimized');
 });

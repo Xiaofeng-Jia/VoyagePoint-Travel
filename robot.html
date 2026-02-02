@@ -9,7 +9,7 @@
 <body class="robotic" data-script="robot">
   <header class="site-header">
     <h1>VoyagePoint Travel</h1>
-    <p class="tag">2026 — data-driven, efficient</p>
+    <!-- <p class="tag">2026 — data-driven, efficient</p> -->
   </header>
   <div class="banner">
     <img src="images/2026.png" alt="modern banner" width="1800" height="300">
@@ -35,16 +35,22 @@
     </section>
   </main>
 
-  <div id="chatModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div id="chatWidget" class="chat-widget hidden" role="dialog" aria-modal="true">
+    <div class="chat-header">
+      <div class="chat-title">Amy</div>
+      <div class="chat-controls">
+        <button id="minimizeChat" class="ctrl">—</button>
+        <button id="closeChat" class="ctrl">✕</button>
+      </div>
+    </div>
     <div class="modal-content">
       <div id="chatMessage" class="chat-message"></div>
       <div id="chatOptions" class="chat-options"></div>
-      <button id="closeChat" class="close-btn">Close</button>
     </div>
   </div>
 
   <footer class="site-footer">
-    <a href="index.html">Switch to Nostalgia-style page</a>
+    <!-- <a href="index.html">Switch to Nostalgia-style page</a> -->
   </footer>
 
   <script src="js/chat.js"></script>
