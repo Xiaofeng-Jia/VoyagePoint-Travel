@@ -19,18 +19,3 @@ How to run locally
 python3 -m http.server 8000
 # then open http://localhost:8000/index.html
 ```
-
-Where to place images
-
-- Add your 1980s-themed image as `images/1980s.jpg` and a modern image as `images/2026.jpg`.
-
-Deploy
-
-- GitHub Pages: push this repo and enable Pages from the `main` branch (or use `gh-pages` branch). For a simple static site, serve the repo root.
-- Netlify / Vercel: connect the repo and deploy — no build step required for static files.
-
-Next steps I can help with
-
-- Wire the dialog choices to collect user emails or send a mock booking email.
-- Add images and refine the styles for the nostalgia/look-and-feel you prefer.
-- Create a small CI/CD deploy (Netlify/Vercel) and set a custom domain.
