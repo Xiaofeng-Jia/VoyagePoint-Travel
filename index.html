@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VoyagePoint Travel — Nostalgia</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="nostalgia" data-script="nostalgia">
+  <header class="site-header">
+    <h1>VoyagePoint Travel</h1>
+    <p class="tag">1980s — slow-travel, heart-first</p>
+  </header>
+  <div class="banner">
+    <img src="images/1980s.png" alt="1980s banner" width="1800" height="300">
+  </div>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-left">
+        <h2>At VoyagePoint Travel, we help travelers design trips that truly fit their lives.</h2>
+        <p>Whether you're dreaming of a sunny beach, a quiet mountain retreat, or a bustling city getaway, our travel-planning assistant guides you step-by-step with personalized suggestions, flexible options, and easy decision-making tools. We make planning stress-free so you can focus on the part that matters most — enjoying your journey.</p>
+
+        <h3>Company Culture</h3>
+        <p>Founded by a group of travel lovers who grew up trading postcards and flipping through dog-eared travel magazines, VoyagePoint Travel blends modern trip-planning tools with the comfort of classic memories. The company embraces a “slow-travel, heart-first” philosophy, inspired by the charm of past decades — handwritten notes, vintage cameras, road-trip mix CDs, and the joy of discovering places through stories rather than algorithms.</p>
+      </div>
+      <!-- <div class="hero-right">
+        <div class="image-placeholder">You can replace the banner above with your 1800×300 image at <code>images/1980s.png</code></div>
+      </div> -->
+    </section>
+
+    <section class="chat-section">
+      <button id="startChat" class="btn">Talk to Amy</button>
+      <!-- <p class="hint">Click to open a guided dialog (nostalgic voice).</p> -->
+    </section>
+  </main>
+
+  <div id="chatModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div id="chatMessage" class="chat-message"></div>
+      <div id="chatOptions" class="chat-options"></div>
+      <button id="closeChat" class="close-btn">Close</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <a href="robot.html">Switch to Robot-style page</a>
+  </footer>
+
+  <script src="js/chat.js"></script>
+</body>
+</html>
