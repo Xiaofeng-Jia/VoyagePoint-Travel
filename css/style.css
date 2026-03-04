@@ -1,11 +1,23 @@
+.root, /* fallback if needed */
 :root{
-  --bg:#f4f4f9;
+  --bg:#f3e7c9; /* warm paper base */
   --accent:#ff7b7b;
   --muted:#666;
+  --paper-texture: linear-gradient(180deg,rgba(255,255,255,0.03),rgba(0,0,0,0.02)),repeating-linear-gradient(0deg,rgba(0,0,0,0.01) 0 1px,transparent 1px 6px),radial-gradient(circle at 10% 10%, rgba(0,0,0,0.03), transparent 12%),radial-gradient(circle at 80% 80%, rgba(0,0,0,0.02), transparent 18%);
 }
 *{box-sizing:border-box}
-.body-large, body{margin:0;font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;background:var(--bg);color:#222;font-size:18px;line-height:1.5}
-.site-header{padding:28px;text-align:center;background:linear-gradient(90deg,#ffefef,#fff5e6);border-bottom:1px solid #eee}
+.body-large, body{
+  margin:0;
+  font-family:Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  background-color:var(--bg);
+  background-image:var(--paper-texture);
+  background-attachment:fixed;
+  background-repeat:repeat;
+  color:#222;
+  font-size:18px;
+  line-height:1.5
+}
+.site-header{padding:28px;text-align:center;background-color:var(--bg);background-image:var(--paper-texture);background-repeat:repeat;border-bottom:1px solid #eee}
 .site-header h1{margin:0;font-size:40px;letter-spacing:1px}
 .site-header .tag{margin:8px 0 0;color:var(--muted);font-size:18px}
 .container{max-width:1100px;margin:32px auto;padding:0 20px}
