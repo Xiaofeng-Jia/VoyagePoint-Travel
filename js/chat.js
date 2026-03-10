@@ -1,171 +1,362 @@
-const modal = document.getElementById('chatWidget');
-const startBtn = document.getElementById('startChat');
+/* ================================================================
+   VoyagePoint Travel — Chat Engine  (async / sequential)
+   Supports: typing delays, wait pauses, GIFs, loading bars,
+             soft prompts, store_response_only, continue_anyway
+   ================================================================ */
+
+const modal       = document.getElementById('chatWidget');
+const startBtn    = document.getElementById('startChat');
 const chatMessage = document.getElementById('chatMessage');
 const chatOptions = document.getElementById('chatOptions');
-const closeBtn = document.getElementById('closeChat');
+const closeBtn    = document.getElementById('closeChat');
 const minimizeBtn = document.getElementById('minimizeChat');
 
-const nostalgiaSteps = [
-  {
-    message: `Hey! I’m Amy, your travel agency. I was just listening to my favorite mixtape on my Walkman and daydreaming about beaches and neon sunsets. I love planning trips — it makes life feel like an MTV music video. Tell me… what kind of getaway are you in the mood for?`,
-    options: ["Something totally chill.", "I’m looking for an adventure.", "Just browsing, thanks."]
-  },
-  {
-    message: `A chill trip sounds like the perfect vibe. Sometimes I just want to grab a cassette camera and relax somewhere the only decision is which song to play next. Beachy sunshine? Or somewhere quiet where you can just journal and breathe?`,
-    options: ["Beach, please!", "Low-key is the way to be.", "Other options."]
-  },
-  {
-    message: `Beaches! Yes! The ocean always makes me feel like life is bigger than this tiny town I’m in. Miami and Hawaii are both on my ‘places to escape to before turning 21’ list. Which one sounds more like you?`,
-    options: ["Hawaii", "Miami", "Somewhere else"]
-  },
-  {
-    message: `Miami is so cool — palm trees, night breeze, and dancing with friends until your hair smells like ocean air. I know a hotel there with a rooftop pool that feels like a scene from a movie. Want me to check if we can still get in?`,
-    options: ["Let’s do it!", "Not feeling it."]
-  },
-  {
-    message: `Yesss! I’m checking now — looks like we’ve still got a chance! I’ll send you everything — like passing notes in class but way cooler. Thanks for dreaming with me. Talk soon, I’ll bring the mixtape.`,
-    options: []
-  }
+/* ── Step definitions ──────────────────────────────────────────── */
+
+const nostalgiaFlow = [
+  // — intro —
+  { message: `Amy: Hi! I'm Amy, your travel-planning partner at VoyagePoint Travel.`,
+    typing: 5000 },
+  { message: `Amy: We specialize in nostalgia-centered travel —\nhelping people revisit meaningful destinations\nand relive important moments from earlier chapters of their lives.`,
+    typing: 6000 },
+  { message: `Amy: Unlike traditional travel agencies that focus mainly on flights and hotels,`,
+    typing: 5000 },
+  { message: `we also design nostalgia-rich experiences at the destination —`,
+    typing: 5000 },
+  { message: `such as revisiting meaningful landmarks,\nrecreating favorite routines,\nand finding places that still carry the same atmosphere.`,
+    typing: 6000,
+    show_gif: 'nostalgia.gif' },
+
+  // — music soft-prompt —
+  { message: `Amy: Before we continue —\ndoes music ever bring back memories for you?`,
+    typing: 6000,
+    soft_prompt: true,
+    options: ['Very often', 'Sometimes', 'Rarely', 'Almost never'],
+    store_response_only: true,
+    continue_anyway: true },
+
+  // — nostalgia bridge —
+  { message: `Amy: Wonderful — we're from the same generation.`,
+    typing: 5000 },
+  { message: `Amy: Many of us grew up listening to songs like\n🎵 [Song 1] 🎵 [Song 2] 🎵 [Song 3]`,
+    typing: 6000 },
+  { message: `Amy: Traveling while listening to these songs\ncan make the experience even more meaningful and fun.`,
+    typing: 6000,
+    wait: 1200 },
+  { message: `Amy: Take a moment to picture that trip you just mentioned.`,
+    typing: 6000,
+    wait: 2000 },
+  { message: `Amy: Next, I'll ask a few questions\nto help us design your nostalgic journey.`,
+    typing: 6000 },
+
+  // — survey —
+  { message: `Amy: What makes that travel experience feel nostalgic to you?\n(Please select one.)`,
+    typing: 6000,
+    options: [
+      'It reminds me of an earlier, meaningful time in my life',
+      'It brings back warm memories of the people and moments',
+      'It makes me feel connected to who I was during that period'
+    ],
+    store_response_only: true },
+  { message: `Amy: What season did you travel there?`,
+    typing: 6000,
+    options: ['Spring', 'Summer', 'Fall', 'Winter'],
+    store_response_only: true },
+  { message: `Amy: Who were you traveling with?`,
+    typing: 6000,
+    options: ['Family', 'Friends', 'Romantic partner', 'Alone'],
+    store_response_only: true },
+  { message: `Amy: Thinking back, what was the approximate budget range (in today's dollars)?`,
+    typing: 6000,
+    options: [
+      'A. Not sure',
+      'B. Under $1,000',
+      'C. $1,000–$3,000',
+      'D. $3,000–$6,000',
+      'E. $6,000+'
+    ],
+    store_response_only: true },
+
+  // — closing —
+  { message: `Amy: Thank you for sharing these memories.`,
+    typing: 5000 },
+  { message: `Amy: I'm excited to help you recreate that meaningful journey.`,
+    typing: 5000 },
+  { message: `Amy: Based on the destination you shared,\nI will design a complete travel plan —\nincluding transportation, accommodations,\nand nostalgia-rich experiences at the location.`,
+    typing: 6000 },
+  { message: `Amy: I'll put everything together and return shortly\nwith your personalized nostalgia-centered travel plan.`,
+    typing: 6000 }
 ];
 
-const robotSteps = [
-  {
-    message: `Hi there! I’m Amy. I’d love to help you find your next trip. What kind of travel experience are you hoping for today?`,
-    options: ["Relaxing trip", "Adventurous trip", "Just browsing"]
-  },
-  {
-    message: `No problem! Would you like a beach getaway, or something more quiet and secluded?`,
-    options: ["Beach destination", "Secluded destination", "Other options."]
-  },
-  {
-    message: `I have a few tropical ideas in mind — for example, Miami or Hawaii. Which would you like to explore?`,
-    options: ["Hawaii", "Miami", "Somewhere else"]
-  },
-  {
-    message: `Miami is lovely — there’s a package with a rooftop pool and gorgeous views. Would you like me to check whether it's available?`,
-    options: ["Yes, check availability", "No, show me something else."]
-  },
-  {
-    message: `Great news — there’s still availability. To move forward, I’ll need a few details from you. I’ll email you all the details shortly. Thank you! Hope to talk again soon.`,
-    options: []
-  }
+const robotFlow = [
+  // — intro —
+  { message: `Amy: Hi! I'm Amy, your travel-planning partner at VoyagePoint Travel.`,
+    typing: 5000 },
+  { message: `Amy: We specialize in technology-driven travel planning — helping people make efficient, informed decisions using real-time data and smart tools.`,
+    typing: 6000 },
+  { message: `Amy: Unlike traditional travel agencies that rely mainly on manual coordination,`,
+    typing: 5000 },
+  { message: `we use up-to-date travel insights, optimized routing systems, and smart filtering tools`,
+    typing: 5000 },
+  { message: `to create practical, well-structured travel plans.`,
+    typing: 6000,
+    show_gif: 'modern.gif' },
+
+  // — music soft-prompt —
+  { message: `Amy: Before we continue —\ndoes music ever bring back memories for you?`,
+    typing: 6000,
+    soft_prompt: true,
+    options: ['Very often', 'Sometimes', 'Rarely', 'Almost never'],
+    store_response_only: true,
+    continue_anyway: true },
+
+  // — bridge —
+  { message: `Amy: Traveling while listening to your favorite songs can make the experience more enjoyable and fun.`,
+    typing: 5000 },
+  { message: `Amy: These days, many people enjoy music like\n🎵 [Song 1] 🎵 [Song 2] 🎵 [Song 3]`,
+    typing: 5000 },
+  { message: `Amy: Take a moment to think about the destination you just mentioned.`,
+    typing: 6000,
+    wait: 1500 },
+  { message: `Amy: Next, I'll ask a few quick questions\nto build the most effective and efficient plan for your future travel.`,
+    typing: 6000,
+    wait: 1500 },
+
+  // — survey —
+  { message: `Amy: What is most important to you when planning this trip?\n(Please select one.)`,
+    typing: 6000,
+    options: [
+      'Finding the most efficient and cost-effective options',
+      'Having clear, up-to-date information to make confident decisions',
+      'Creating a well-organized itinerary that fits your schedule and goals'
+    ],
+    store_response_only: true },
+  { message: `Amy: What season are you planning to travel?`,
+    typing: 6000,
+    options: ['Spring', 'Summer', 'Fall', 'Winter'],
+    store_response_only: true },
+  { message: `Amy: Who will you be traveling with?`,
+    typing: 6000,
+    options: ['Family', 'Friends', 'Romantic partner', 'Alone'],
+    store_response_only: true },
+  { message: `Amy: What is your approximate budget range?`,
+    typing: 6000,
+    options: [
+      'A. Not sure',
+      'B. Under $1,000',
+      'C. $1,000–$3,000',
+      'D. $3,000–$6,000',
+      'E. $6,000+'
+    ],
+    store_response_only: true },
+
+  // — closing —
+  { message: `Amy: Thank you for sharing your preferences.`,
+    typing: 5000 },
+  { message: `Amy: Based on the destination and details you provided,\nI will design a complete travel plan —\nincluding transportation, accommodations,\nand optimized activity recommendations tailored to your needs.`,
+    typing: 6000 },
+  { message: `Amy: I'll organize everything and get back to you shortly\nwith your personalized, data-informed travel plan.`,
+    typing: 6000 }
 ];
 
-// Correct answers for each dialog (1-based in spec -> convert to 0-based indices)
-const nostalgiaAnswers = [0, 0, 1, 0]; // corresponds to steps 1..4
-const robotAnswers = [0, 0, 1, 0];
+/* ── State ─────────────────────────────────────────────────────── */
 
-function getAnswers() {
-  const script = document.body.getAttribute('data-script');
-  return script === 'robot' ? robotAnswers : nostalgiaAnswers;
+let stepIndex   = 0;
+let flowStarted = false;
+const storedResponses = {};
+
+function getSteps () {
+  const s = document.body.getAttribute('data-script') || 'nostalgia';
+  return s === 'robot' ? robotFlow : nostalgiaFlow;
 }
 
-function getSteps() {
-  const script = document.body.getAttribute('data-script');
-  return script === 'robot' ? robotSteps : nostalgiaSteps;
-}
+/* ── DOM helpers ───────────────────────────────────────────────── */
 
-let stepIndex = 0;
-// history holds rendered messages so reopening the dialog shows past conversation
-let history = [];
-let lastPushedStep = -1; // track which system steps we've already pushed into history
+function scrollBottom () { chatMessage.scrollTop = chatMessage.scrollHeight; }
 
-function openModal() {
-  // do not reset stepIndex or history so previous dialog is visible
-  // if no history yet, render the current step which will push its system message
-  renderStep();
-  modal.classList.remove('hidden');
-  // ensure it's expanded when opened
-  modal.classList.remove('minimized');
-}
+function delay (ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function closeModal() {
-  modal.classList.add('hidden');
-}
-
-function renderHistory() {
-  chatMessage.innerHTML = '';
-  history.forEach(item => {
-    const el = document.createElement('div');
-    el.className = 'msg ' + (item.type === 'user' ? 'user' : 'system');
-    el.textContent = item.text;
-    chatMessage.appendChild(el);
+function addBubble (text, cls) {
+  const el = document.createElement('div');
+  el.className = 'msg ' + cls;
+  text.split('\n').forEach((line, i) => {
+    if (i > 0) el.appendChild(document.createElement('br'));
+    el.appendChild(document.createTextNode(line));
   });
-  // scroll to bottom
-  chatMessage.scrollTop = chatMessage.scrollHeight;
+  chatMessage.appendChild(el);
+  scrollBottom();
+  return el;
 }
 
-function renderStep() {
+function addGif (src) {
+  const img = document.createElement('img');
+  img.src  = 'images/' + src;
+  img.alt  = src;
+  img.style.maxWidth = '100%';
+  img.style.display  = 'block';
+  img.style.margin   = '8px 0';
+  chatMessage.appendChild(img);
+  scrollBottom();
+}
+
+function showTyping () {
+  const el = document.createElement('div');
+  el.className = 'msg system typing';
+  el.textContent = 'Amy is typing\u2026';
+  el.id = '_typing';
+  chatMessage.appendChild(el);
+  scrollBottom();
+}
+
+function hideTyping () {
+  const el = document.getElementById('_typing');
+  if (el && el.parentNode) el.parentNode.removeChild(el);
+}
+
+function clearOptions () { chatOptions.innerHTML = ''; }
+
+/* ── Loading bar (returns a Promise that resolves when done) ─── */
+
+function showLoadingBar (cfg) {
+  return new Promise(resolve => {
+    const wrap = document.createElement('div');
+    wrap.style.margin = '10px 0';
+
+    const lbl = document.createElement('div');
+    lbl.textContent    = cfg.text || 'Loading\u2026';
+    lbl.style.fontSize = '0.9em';
+    lbl.style.marginBottom = '4px';
+
+    const outer = document.createElement('div');
+    outer.style.cssText =
+      'width:100%;background:#eee;height:8px;border-radius:4px;overflow:hidden';
+
+    const inner = document.createElement('div');
+    inner.style.cssText =
+      'width:0%;height:100%;background:#4a90e2;border-radius:4px;transition:width 50ms linear';
+
+    outer.appendChild(inner);
+    wrap.appendChild(lbl);
+    wrap.appendChild(outer);
+    chatMessage.appendChild(wrap);
+    scrollBottom();
+
+    const dur   = cfg.duration || 1500;
+    const start = Date.now();
+    const tick  = setInterval(() => {
+      const pct = Math.min(100, ((Date.now() - start) / dur) * 100);
+      inner.style.width = pct + '%';
+      if (pct >= 100) { clearInterval(tick); setTimeout(resolve, 400); }
+    }, 40);
+  });
+}
+
+/* ── Core flow engine (fully sequential via async / await) ───── */
+
+async function runStep () {
   const steps = getSteps();
+  if (stepIndex >= steps.length) return;
+
   const step = steps[stepIndex];
+  clearOptions();
 
-  // push system message for this step into history if not yet pushed
-  if (lastPushedStep < stepIndex) {
-    history.push({ type: 'system', text: step.message });
-    lastPushedStep = stepIndex;
+  /* 1 — typing indicator */
+  if (step.typing) {
+    showTyping();
+    await delay(step.typing);
+    hideTyping();
   }
 
-  renderHistory();
-  chatOptions.innerHTML = '';
+  /* 2 — show message bubble */
+  addBubble(step.message, 'system');
 
+  /* 3 — show GIF right after bubble */
+  if (step.show_gif) addGif(step.show_gif);
+
+  /* 4 — wait / reflection pause */
+  if (step.wait) await delay(step.wait);
+
+  /* 5 — loading bar (auto-advances when animation finishes) */
+  if (step.show_loading_bar) {
+    await showLoadingBar(step.show_loading_bar);
+    if (stepIndex < steps.length - 1) { stepIndex++; return runStep(); }
+    showEnd();
+    return;
+  }
+
+  /* 6 — interactive step (has options) → show buttons & wait for click */
   if (step.options && step.options.length) {
-    step.options.forEach((opt, index) => {
-      const btn = document.createElement('button');
-      btn.textContent = opt;
-      // store index for validation
-      btn.dataset.index = index;
-      btn.addEventListener('click', () => handleOption(index, btn));
-      chatOptions.appendChild(btn);
-    });
-  } else {
-    // final message — show a simple acknowledgment in options area
-    const done = document.createElement('div');
-    done.textContent = '— End of dialog — Thank you!';
-    done.className = 'end';
-    chatOptions.appendChild(done);
+    showButtons(step);
+    return;                       // flow pauses here; handleOption resumes
   }
+
+  /* 7 — narrative step (no options) → auto-advance to next */
+  if (stepIndex < steps.length - 1) { stepIndex++; return runStep(); }
+
+  /* 8 — very last step with no options → done */
+  showEnd();
 }
 
-function handleOption(selectedIndex, btnEl) {
+/* ── Render option buttons ────────────────────────────────────── */
+
+function showButtons (step) {
+  clearOptions();
+  step.options.forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    if (step.soft_prompt) btn.classList.add('soft');
+    btn.addEventListener('click', () => handleOption(i));
+    chatOptions.appendChild(btn);
+  });
+}
+
+/* ── Handle user selection ────────────────────────────────────── */
+
+function handleOption (idx) {
   const steps = getSteps();
-  const answers = getAnswers();
-  const correct = answers[stepIndex];
+  const step  = steps[stepIndex];
 
-  // If no correct answer specified for this step, allow progression
-  if (typeof correct === 'undefined') {
-    if (stepIndex < steps.length - 1) {
-      stepIndex += 1;
-      renderStep();
-    } else {
-      closeModal();
-    }
-    return;
+  // always store internally
+  storedResponses[stepIndex] = { index: idx, value: step.options[idx] };
+
+  // show user bubble only when NOT store_response_only
+  if (!step.store_response_only) {
+    addBubble(step.options[idx], 'user');
   }
 
-  if (selectedIndex === correct) {
-    // record user selection in history
-    const step = steps[stepIndex];
-    history.push({ type: 'user', text: step.options[selectedIndex] });
+  clearOptions();
 
-    // correct — advance
-    if (stepIndex < steps.length - 1) {
-      stepIndex += 1;
-      renderStep();
-    } else {
-      // push final system message into history (if not already pushed) then close
-      // renderStep will handle pushing the final system message if appropriate
-      renderStep();
-      // optionally keep the modal open so user can see final message; close after short delay
-      setTimeout(() => closeModal(), 1000);
-    }
+  // advance
+  if (stepIndex < steps.length - 1) {
+    stepIndex++;
+    runStep();
   } else {
-    // incorrect — no action (click has no effect)
-    return;
+    showEnd();
   }
 }
 
-startBtn && startBtn.addEventListener('click', openModal);
-closeBtn && closeBtn.addEventListener('click', closeModal);
+/* ── End-of-dialog marker ─────────────────────────────────────── */
+
+function showEnd () {
+  clearOptions();
+  const d = document.createElement('div');
+  d.textContent = '— End of dialog — Thank you!';
+  d.className   = 'end';
+  chatOptions.appendChild(d);
+}
+
+/* ── Modal controls ───────────────────────────────────────────── */
+
+function openModal () {
+  modal.classList.remove('hidden');
+  modal.classList.remove('minimized');
+  if (!flowStarted) { flowStarted = true; runStep(); }
+}
+
+function closeModal () { modal.classList.add('hidden'); }
+
+startBtn    && startBtn.addEventListener('click', openModal);
+closeBtn    && closeBtn.addEventListener('click', closeModal);
 minimizeBtn && minimizeBtn.addEventListener('click', () => {
   modal.classList.toggle('minimized');
 });
