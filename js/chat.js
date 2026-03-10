@@ -15,8 +15,7 @@ const minimizeBtn = document.getElementById('minimizeChat');
 
 const nostalgiaFlow = [
   // — intro —
-  { message: `Amy: Hi! I'm Amy, your travel-planning partner at VoyagePoint Travel.`,
-    typing: 5000 },
+  { message: `Amy: Hi! I'm Amy, your travel-planning partner at VoyagePoint Travel.`},
   { message: `Amy: We specialize in nostalgia-centered travel —\nhelping people revisit meaningful destinations\nand relive important moments from earlier chapters of their lives.`,
     typing: 6000 },
   { message: `Amy: Unlike traditional travel agencies that focus mainly on flights and hotels,`,
@@ -90,8 +89,7 @@ const nostalgiaFlow = [
 
 const robotFlow = [
   // — intro —
-  { message: `Amy: Hi! I'm Amy, your travel-planning partner at VoyagePoint Travel.`,
-    typing: 5000 },
+  { message: `Amy: Hi! I'm Amy, your travel-planning partner at VoyagePoint Travel.`},
   { message: `Amy: We specialize in technology-driven travel planning — helping people make efficient, informed decisions using real-time data and smart tools.`,
     typing: 6000 },
   { message: `Amy: Unlike traditional travel agencies that rely mainly on manual coordination,`,

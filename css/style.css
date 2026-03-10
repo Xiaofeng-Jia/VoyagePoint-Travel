@@ -55,7 +55,8 @@
 /* no visual feedback for incorrect choices per project requirements */
 
 /* Robotic styling overrides */
-body.robotic .site-header{background:linear-gradient(90deg,#e9f2ff,#f7fbff)}
+body.robotic{background-color:#fff;background-image:none}
+body.robotic .site-header{background:#fff;background-image:none}
 body.robotic .image-placeholder{background:linear-gradient(135deg,#e6f0ff,#f2f8ff);color:#21507a}
 body.robotic .btn{background:#2463ff}
 
